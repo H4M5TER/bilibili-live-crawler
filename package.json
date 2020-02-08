@@ -1,0 +1,24 @@
+{
+	"name": "bilibili-live-crawler",
+	"version": "0.1.0",
+	"engines": {
+		"node": ">=12.15.0"
+	},
+	"description": "a crawler which made to monitor bilibili livestream data, using influxdb.",
+	"keywords": [
+		"bilibili",
+		"crawler"
+	],
+	"repository": "github:H4M5TER/bilibili-live-crawler",
+	"homepage": "https://github.com/h4m5ter/bili-livestream-monitor#readme",
+	"bugs": "https://github.com/h4m5ter/bili-livestream-monitor/issues",
+	"license": "MIT",
+	"author": "H4M5TER <zhuxx2003@163.com> (https://github.com/h4m5ter/)",
+	"dependencies": {
+		"axios": "^0.19.2",
+		"influx": "^5.5.1"
+	},
+	"scripts": {
+		"start": "node crawler.js"
+	}
+}
