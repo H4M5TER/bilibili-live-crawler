@@ -71,7 +71,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 								if (data.type !== 1)
 									return;
 								// 交给与数据库交互的部分处理
-								store(data);
+								store(streamer.uid, streamer.uname, data.arguments[1], streamer.participantDuring10Min);
 							})
 						}
 						ws.onclose = (event) => {
