@@ -19,7 +19,7 @@ const database = new Influx.InfluxDB({
 				"participant": Influx.FieldType.INTEGER,
 				"fans_increment": Influx.FieldType.INTEGER
 			},
-			tags [
+			tags: [
 				"uid",
 				"uname",
 				"start_time",
@@ -36,7 +36,7 @@ exports.store = (uid, uname, data, recent) => {
 			tags: {
 				uid: uid.toString(),
 				uname: uname,
-				start_time: data.startTime,
+				start_time: (new Date(data.startTime)).toISOString(),
 				title: data.title
 			},
 			fields: {
@@ -52,7 +52,8 @@ exports.store = (uid, uname, data, recent) => {
 				"superchat_user": data.giftDanmukuUser,
 				"participant": data.participant,
 				"fans_increment": data.fansIncrement
-			}
+			},
+			timestamp: (new Date(data.endTime)).getTime()
 		}
 	])
 }

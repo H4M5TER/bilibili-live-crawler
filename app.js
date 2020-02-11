@@ -26,8 +26,9 @@ fs.readFile("config.json", "utf8", (err, data) => {
 		}
 		return;
 	}
-	else
-		const config = JSON.parse(data);
+	else {
+		let config = JSON.parse(data);
+	}
 	// monitoring用于记录uid是否监视
 	let monitoring = new Map();
 	for (let i of config.uid)
@@ -66,7 +67,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 						ws.onmessage = (event) => {
 							// 拆开合并的数据包
 							event.data.split("\u001e").forEach((data) => {
-								let data = JSON.parse(data);
+								data = JSON.parse(data);
 								// 排除心跳包和空包
 								if (data.type !== 1)
 									return;
