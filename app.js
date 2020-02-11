@@ -1,9 +1,11 @@
-const axios = require("axios");
 const fs = require("fs");
+const axios = require("axios");
+const WebSocket = require("ws");
 const store = require("./db").store;
 
 //读取配置文件
 fs.readFile("config.json", "utf8", (err, data) => {
+	let config;
 	//错误处理
 	if (err) {
 		//检测初始化
@@ -27,7 +29,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 		return;
 	}
 	else {
-		let config = JSON.parse(data);
+		config = JSON.parse(data);
 	}
 	// monitoring用于记录uid是否监视
 	let monitoring = new Map();

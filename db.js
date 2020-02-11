@@ -30,7 +30,7 @@ const database = new Influx.InfluxDB({
 });
 
 exports.store = (uid, uname, data, recent) => {
-	database.wriePoints([
+	database.writePoints([
 		{
 			measurement: "livestream",
 			tags: {
@@ -55,5 +55,7 @@ exports.store = (uid, uname, data, recent) => {
 			},
 			timestamp: (new Date(data.endTime)).getTime()
 		}
-	])
+	]).catch((error) => {
+		console.error(error);
+	})
 }

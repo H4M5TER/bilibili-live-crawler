@@ -16,6 +16,7 @@
 	"author": "H4M5TER <zhuxx2003@163.com> (https://github.com/h4m5ter/)",
 	"dependencies": {
 		"axios": "^0.19.2",
+		"ws": "^7.2.1",
 		"influx": "^5.5.1"
 	},
 	"scripts": {
