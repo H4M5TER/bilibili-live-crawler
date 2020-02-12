@@ -49,9 +49,9 @@ fs.readFile("config.json", "utf8", (err, data) => {
 			return;
 		// 获取直播列表 检查监视用户是否开播
 		axios.get("https://vup.darkflame.ga/api/online").then((response) => {
-			return response.data; //axios的response和原生的response接口不同
-		}).then((data) => {
-			data.list.forEach((streamer) => {
+			return response.data.list; //axios的response和原生的response接口不同 response是一次性的
+		}).then((list) => {
+			list.forEach((streamer) => {
 				// 如果开播
 				if (monitoring.has(streamer.uid) && !monitoring.get(streamer.uid)) { //TODO: 或许有更优雅的写法
 					// 获取网站要求的token 连接websocket
@@ -68,7 +68,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 						}
 						ws.onmessage = (event) => {
 							// 拆开合并的数据包
-							event.data.split("\u001e").forEach((data) => {
+							event.data.substring(0, event.data.length - 1).split("\u001e").forEach((data) => {
 								data = JSON.parse(data);
 								// 排除心跳包和空包
 								if (data.type !== 1)
