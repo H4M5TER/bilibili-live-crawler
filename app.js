@@ -4,27 +4,26 @@ const WebSocket = require("ws");
 const store = require("./db").store;
 
 //读取配置文件
-fs.readFile("config.json", "utf8", (err, data) => {
+fs.readFile("config.json", "utf8", (error, data) => {
 	let config;
 	//错误处理
-	if (err) {
+	if (error) {
 		//检测初始化
-		if (err.code === "ENOENT") {
+		if (error.code === "ENOENT") {
 			console.log("config.json doesn't exist.\nIt will be created later.\nPlease edit it and start the crawler again.");
 			const config = {
 				"uid": [
 					123456
 				]
 			};
-			fs.writeFile("config.json", JSON.stringify(config, null, "\t"), "utf8", (err) => {
-				if (err) {
-					console.error(err);
-					console.error("Create config.json failed.");
+			fs.writeFile("config.json", JSON.stringify(config, null, "\t"), "utf8", (error) => {
+				if (error) {
+					return console.error("Create config.json failed.\n" + error);
 				}
 			})
 		}
 		else {
-			console.error(err);
+			return console.error("Reading config.json failed.\n" + error);
 		}
 		return;
 	}
@@ -51,6 +50,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 		axios.get("https://vup.darkflame.ga/api/online").then((response) => {
 			return response.data.list; //axios的response和原生的response接口不同 response是一次性的
 		}).then((list) => {
+			console.log("Checking online list.");
 			list.forEach((streamer) => {
 				// 如果开播
 				if (monitoring.has(streamer.uid) && !monitoring.get(streamer.uid)) { //TODO: 或许有更优雅的写法
@@ -61,6 +61,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 							ws.send('{"protocol":"json","version":1}\u001e');
 							// websocket连接时 把当前uid记为已经监视
 							monitoring.set(streamer.uid, true);
+							console.log(streamer.uname + " is online.\nWebSocket opened.")
 							// 开始发送网站应用层的心跳包 15秒一次
 							setInterval(() => {
 								ws.send('{"type":6}\u001e');
@@ -68,6 +69,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 						}
 						ws.onmessage = (event) => {
 							// 拆开合并的数据包
+							console.log("Data received.");
 							event.data.split("\u001e").filter(str => str).forEach((data) => { // 去除split最后的空串
 								data = JSON.parse(data);
 								// 排除心跳包和空包
@@ -81,15 +83,17 @@ fs.readFile("config.json", "utf8", (err, data) => {
 							// websocket关闭时 把当前uid记为停止监视
 							monitoring.set(streamer.uid, false);
 						}
-					}).catch((err) => {
+						ws.onerror = (event) => {
+							console.error(event.error());
+						}
+					}).catch((error) => {
 						//错误处理
-						console.error("Open websocket failed.")
-						return console.error(err);
+						return console.error("Open websocket failed.\n" + error)
 					})
 				}
 			})
-		}).catch((err) => {
-			console.error("Check online failed.");
+		}).catch((error) => {
+			return console.error("Check online failed.\n" + error);
 		})
 	}, 60000)
 })

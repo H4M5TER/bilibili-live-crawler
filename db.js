@@ -30,6 +30,7 @@ const database = new Influx.InfluxDB({
 });
 
 exports.store = (uid, uname, data, recent) => {
+	console.log("Writing to database");
 	database.writePoints([
 		{
 			measurement: "livestream",
@@ -56,6 +57,6 @@ exports.store = (uid, uname, data, recent) => {
 			timestamp: (new Date(data.endTime)).getTime()
 		}
 	]).catch((error) => {
-		console.error(error);
+		console.error("Write database failed.\n" + error);
 	})
 }
