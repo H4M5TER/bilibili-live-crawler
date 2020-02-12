@@ -68,7 +68,7 @@ fs.readFile("config.json", "utf8", (err, data) => {
 						}
 						ws.onmessage = (event) => {
 							// 拆开合并的数据包
-							event.data.substring(0, event.data.length - 1).split("\u001e").forEach((data) => {
+							event.data.split("\u001e").filter(str => str).forEach((data) => { // 去除split最后的空串
 								data = JSON.parse(data);
 								// 排除心跳包和空包
 								if (data.type !== 1)
