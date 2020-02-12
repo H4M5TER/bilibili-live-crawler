@@ -1,35 +1,42 @@
 const Influx = require("influx");
-const database = new Influx.InfluxDB({
-	host: "localhost",
-	database: "vup_db",
-	schema: [
-		{
-			measurement: "livestream",
-			fields: {
-				"popularity": Influx.FieldType.INTEGER,
-				"comment": Influx.FieldType.INTEGER,
-				"recent_comment_user": Influx.FieldType.INTEGER,
-				"comment_user": Influx.FieldType.INTEGER,
-				"silver_coin": Influx.FieldType.INTEGER,
-				"free_gift_user": Influx.FieldType.INTEGER,
-				"gold_coin": Influx.FieldType.INTEGER,
-				"paid_gift_user": Influx.FieldType.INTEGER,
-				"superchat": Influx.FieldType.INTEGER,
-				"superchat_user": Influx.FieldType.INTEGER,
-				"participant": Influx.FieldType.INTEGER,
-				"fans_increment": Influx.FieldType.INTEGER
-			},
-			tags: [
-				"uid",
-				"uname",
-				"start_time",
-				"title"
+
+exports.create = config => new Promise((resolve) => {
+	resolve([
+		config,
+		new Influx.InfluxDB({
+			host: config.database.host,
+			port: config.database.port,
+			database: config.database.name,
+			schema: [
+				{
+					measurement: "livestream",
+					fields: {
+						"popularity": Influx.FieldType.INTEGER,
+						"comment": Influx.FieldType.INTEGER,
+						"recent_comment_user": Influx.FieldType.INTEGER,
+						"comment_user": Influx.FieldType.INTEGER,
+						"silver_coin": Influx.FieldType.INTEGER,
+						"free_gift_user": Influx.FieldType.INTEGER,
+						"gold_coin": Influx.FieldType.INTEGER,
+						"paid_gift_user": Influx.FieldType.INTEGER,
+						"superchat": Influx.FieldType.INTEGER,
+						"superchat_user": Influx.FieldType.INTEGER,
+						"participant": Influx.FieldType.INTEGER,
+						"fans_increment": Influx.FieldType.INTEGER
+					},
+					tags: [
+						"uid",
+						"uname",
+						"start_time",
+						"title"
+					]
+				}
 			]
-		}
-	]
+		})
+	]);
 });
 
-exports.store = (uid, uname, data, recent) => {
+exports.store = (database, data, uid, uname, recent) => {
 	console.log("Writing to database");
 	database.writePoints([
 		{
@@ -59,4 +66,4 @@ exports.store = (uid, uname, data, recent) => {
 	]).catch((error) => {
 		console.error("Write database failed.\n" + error);
 	})
-}
+};
