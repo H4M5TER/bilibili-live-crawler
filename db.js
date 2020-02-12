@@ -37,7 +37,7 @@ exports.store = (uid, uname, data, recent) => {
 			tags: {
 				uid: uid.toString(),
 				uname: uname,
-				start_time: (new Date(data.startTime)).toISOString(),
+				start_time: (new Date(data.startTime)).toLocaleString(),
 				title: data.title
 			},
 			fields: {
