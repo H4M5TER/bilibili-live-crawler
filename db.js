@@ -1,5 +1,7 @@
 const Influx = require("influx");
 
+let buffer = new Array();
+
 exports.connect = async (config) => {
 	let influxServer = new Influx.InfluxDB({
 		host: config.host,
@@ -37,31 +39,38 @@ exports.connect = async (config) => {
 	return influxServer;
 };
 
-exports.store = (influxServer, data, uid, uname, recent) => {
-	influxServer.writePoints([
-		{
-			measurement: "livestream",
-			tags: {
-				uid: uid.toString(),
-				uname: uname,
-				start_time: (new Date(data.startTime)).toLocaleString(),
-				title: data.title
-			},
-			fields: {
-				"popularity": data.popularity,
-				"comment": data.realDanmaku,
-				"recent_comment_user": recent,
-				"comment_user": data.danmakuUser,
-				"silver_coin": data.silverCoin,
-				"free_gift_user": data.silverUser,
-				"gold_coin": data.goldCoin,
-				"paid_gift_user": data.goldUser,
-				"superchat": data.giftDanmaku,
-				"superchat_user": data.giftDanmakuUser,
-				"participant": data.participants,
-				"fans_increment": data.fansIncrement
-			},
-			timestamp: (new Date(data.endTime)).getTime()
-		}
-	]).catch(e => console.error("Write database failed.\n" + e));
+exports.store = (data, uid, uname, recent) => {
+	buffer.push({
+		measurement: "livestream",
+		tags: {
+			uid: uid.toString(),
+			uname: uname,
+			start_time: (new Date(data.startTime)).toLocaleString(),
+			title: data.title
+		},
+		fields: {
+			"popularity": data.popularity,
+			"comment": data.realDanmaku,
+			"recent_comment_user": recent,
+			"comment_user": data.danmakuUser,
+			"silver_coin": data.silverCoin,
+			"free_gift_user": data.silverUser,
+			"gold_coin": data.goldCoin,
+			"paid_gift_user": data.goldUser,
+			"superchat": data.giftDanmaku,
+			"superchat_user": data.giftDanmakuUser,
+			"participant": data.participants,
+			"fans_increment": data.fansIncrement
+		},
+		timestamp: (new Date(data.endTime)).getTime()
+	});
 };
+
+exports.commit = async (influxServer) => {
+	try {
+		await influxServer.writePoints(buffer);
+	} catch (e) {
+		console.log("Write database failed.\n" + e);
+	}
+	buffer = new Array();
+}

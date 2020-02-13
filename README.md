@@ -6,35 +6,22 @@
 
 ## 部署
 
-### 1. 下载
+### 1. 安装Node.js
 
-clone或下载本项目到本地
+<https://nodejs.org/en/download/>
 
-### 2. 准备环境
-
-在工作目录执行
+### 2. 获取程序
 
 ```bash
-npm install
+npm install @h4m5ter/bilibili-live-crawler
 ```
 
 ### 3. 安装数据库
 
-根据您服务器的系统参考下方网站  
 <https://portal.influxdata.com/downloads/>  
 <https://docs.influxdata.com/influxdb/v1.7/introduction/installation/>
 
-### 4. 创建数据库
-
-打开InfluxDB的CLI 键入
-
-```InfluxQL
-CREATE DATABASE *数据库名字*
-```
-
-没有输出即为创建成功 数据库名字需要填入程序设置
-
-### 5. 配置和运行
+### 4. 配置和运行
 
 在工作目录执行
 
@@ -52,13 +39,14 @@ npm start
 	],
 	"database": {
 		"name": "dbname",            在这里填写数据库名字
-		"host": "localhost",         默认没有特殊需求不需要改动 数据库服务器在云端 需要和数据库的设置同步改动
+		"writeRate": 60000,          程序累计存储多久数据后打包写入数据库 毫秒
+		"host": "localhost",         默认没有特殊需求不需要改动 如果数据库服务器在云端 需要和数据库的设置同步改动
 		"port": 8086                 同上 如果端口冲突 需要和数据库的设置同步改动
 	}
 }
 ```
 
-### 6. 其他配置
+### 5. 其他配置
 
 如果需要开机启动、记录日志等功能 请自行配置pm2、systemd等  
 如果需要配置InfluxDB 请参阅
@@ -71,10 +59,6 @@ npm start
 目前的实现是爬取一个提供b站vtuber/vup直播数据监控但是不提供历史数据的站点，  
 未来应自行实现爬取b站直播数据的功能。
 
-### 发布
+### bin
 
-发布到npm/docker 便于部署
-
-### 优化
-
-优化数据库操作方式 分批存储数据
+命令行参数启动

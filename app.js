@@ -52,7 +52,7 @@ intialize().then((config) => {
 					if (data.type !== 1)
 						return;
 					// 交给与数据库交互的部分处理
-					Database.store(config.influxServer, data.arguments[1], streamer.uid, streamer.uname, streamer.participantDuring10Min); //TODO: 或许有更优雅的写法
+					Database.store(data.arguments[1], streamer.uid, streamer.uname, streamer.participantDuring10Min); //TODO: 或许有更优雅的写法
 				})
 			};
 
@@ -64,4 +64,8 @@ intialize().then((config) => {
 			ws.onerror = event => console.error(event.error());
 		});
 	}, 60000);
+
+	setInterval(() => {
+		Database.commit(config.influxServer);
+	}, config.database.writeRate);
 }, e => console.error(e));

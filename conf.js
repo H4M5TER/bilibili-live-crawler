@@ -10,6 +10,7 @@ let intializeConfig = async () => {
 			],
 			"database": {
 				"name": "dbname",
+				"writeRate": 60000,
 				"host": "localhost",
 				"port": 8086
 			}
