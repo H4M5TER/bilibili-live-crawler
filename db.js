@@ -32,7 +32,7 @@ exports.connect = async (config) => {
 		]
 	});
 	// 如果数据库不存在 创建数据库
-	if (await influxServer.getDatabaseNames().then(array => array.includes(config.name)))
+	if ((await influxServer.getDatabaseNames()).includes(config.name))
 		influxServer.createDatabase(config.name);
 	return influxServer;
 };
