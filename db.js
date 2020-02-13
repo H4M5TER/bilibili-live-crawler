@@ -1,44 +1,44 @@
 const Influx = require("influx");
 
-exports.create = config => new Promise((resolve) => {
-	resolve([
-		config,
-		new Influx.InfluxDB({
-			host: config.database.host,
-			port: config.database.port,
-			database: config.database.name,
-			schema: [
-				{
-					measurement: "livestream",
-					fields: {
-						"popularity": Influx.FieldType.INTEGER,
-						"comment": Influx.FieldType.INTEGER,
-						"recent_comment_user": Influx.FieldType.INTEGER,
-						"comment_user": Influx.FieldType.INTEGER,
-						"silver_coin": Influx.FieldType.INTEGER,
-						"free_gift_user": Influx.FieldType.INTEGER,
-						"gold_coin": Influx.FieldType.INTEGER,
-						"paid_gift_user": Influx.FieldType.INTEGER,
-						"superchat": Influx.FieldType.INTEGER,
-						"superchat_user": Influx.FieldType.INTEGER,
-						"participant": Influx.FieldType.INTEGER,
-						"fans_increment": Influx.FieldType.INTEGER
-					},
-					tags: [
-						"uid",
-						"uname",
-						"start_time",
-						"title"
-					]
-				}
-			]
-		})
-	]);
-});
+exports.connect = async (config) => {
+	let influxServer = new Influx.InfluxDB({
+		host: config.host,
+		port: config.port,
+		database: config.name,
+		schema: [
+			{
+				measurement: "livestream",
+				fields: {
+					"popularity": Influx.FieldType.INTEGER,
+					"comment": Influx.FieldType.INTEGER,
+					"recent_comment_user": Influx.FieldType.INTEGER,
+					"comment_user": Influx.FieldType.INTEGER,
+					"silver_coin": Influx.FieldType.INTEGER,
+					"free_gift_user": Influx.FieldType.INTEGER,
+					"gold_coin": Influx.FieldType.INTEGER,
+					"paid_gift_user": Influx.FieldType.INTEGER,
+					"superchat": Influx.FieldType.INTEGER,
+					"superchat_user": Influx.FieldType.INTEGER,
+					"participant": Influx.FieldType.INTEGER,
+					"fans_increment": Influx.FieldType.INTEGER
+				},
+				tags: [
+					"uid",
+					"uname",
+					"start_time",
+					"title"
+				]
+			}
+		]
+	});
+	// 如果数据库不存在 创建数据库
+	if (await influxServer.getDatabaseNames().then(array => array.includes(config.name)))
+		influxServer.createDatabase(config.name);
+	return influxServer;
+};
 
-exports.store = (database, data, uid, uname, recent) => {
-	console.log("Writing to database");
-	database.writePoints([
+exports.store = (influxServer, data, uid, uname, recent) => {
+	influxServer.writePoints([
 		{
 			measurement: "livestream",
 			tags: {
@@ -63,7 +63,5 @@ exports.store = (database, data, uid, uname, recent) => {
 			},
 			timestamp: (new Date(data.endTime)).getTime()
 		}
-	]).catch((error) => {
-		console.error("Write database failed.\n" + error);
-	})
+	]).catch(e => console.error("Write database failed.\n" + e));
 };
