@@ -6,7 +6,8 @@ const getConfig = require("./conf").getConfig;
 let intialize = async () => {
 	let config = await getConfig();
 	return {
-		"uids": config.uid,
+		"uids": config.uids,
+		"writeRate": config.database.writeRate,
 		"influxServer": await Database.connect(config.database)
 	};
 }
@@ -67,5 +68,5 @@ intialize().then((config) => {
 
 	setInterval(() => {
 		Database.commit(config.influxServer);
-	}, config.database.writeRate);
+	}, config.writeRate);
 }, e => console.error(e));
