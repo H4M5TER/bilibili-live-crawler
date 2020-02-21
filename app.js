@@ -21,8 +21,14 @@ intialize().then((config) => {
 		if (!monitoring.includes(false))
 			return;
 		// 获取直播列表 检查监控用户是否开播
-		(await axios.get("https://vup.darkflame.ga/api/online")
-		).data.list.forEach(async streamer => { // forEach会并行调用所有的callback 而不是await阻塞串行调用
+		let online;
+		try {
+			online = (await axios.get("https://vup.darkflame.ga/api/online")).data.list;
+		} catch (error) {
+			console.error("Can't get online list.");
+			throw error;
+		}
+		online.forEach(async streamer => { // forEach会并行调用所有的callback 而不是await阻塞串行调用
 			let index = config.uids.findIndex(uid => uid === streamer.uid);
 			// 如果uid不在监控列表内
 			if (index === -1)
@@ -30,8 +36,14 @@ intialize().then((config) => {
 			// 如果uid已经开播
 			if (monitoring[index])
 				return;
+			let token;
 			// 获取网站要求的token 连接websocket
-			let token = (await axios.post("https://vup.darkflame.ga/roomHub/negotiate?roomId=" + streamer.uid.toString() + "&negotiateVersion=1")).data.connectionToken; //TODO: 异常处理 如果获取不到token重试
+			try {
+				token = (await axios.post("https://vup.darkflame.ga/roomHub/negotiate?roomId=" + streamer.uid.toString() + "&negotiateVersion=1")).data.connectionToken;
+			} catch (error) {
+				console.error("Can't get websocket token.\n");
+				throw error;
+			}
 			let ws = new WebSocket("wss://vup.darkflame.ga/roomHub?roomId=" + streamer.roomId.toString() + "&id=" + token);
 
 			ws.onopen = (event) => {
